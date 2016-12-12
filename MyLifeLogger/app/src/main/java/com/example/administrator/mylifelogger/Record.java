@@ -50,7 +50,7 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
     private GoogleMap mMap;
     private TextView name;
     private EditText title, context;
-    private Spinner spinner;
+    private Spinner spinner,spinner2,spinner3;
     private String dateStr,ImgStr=null;
     SQLiteDatabase db;
     ImageView iv = null;
@@ -68,7 +68,7 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
         try {
             db = SQLiteDatabase.openDatabase( "/data/data/com.example.administrator.mylifelogger/myDB",
                     null, SQLiteDatabase.CREATE_IF_NECESSARY);
-            db.execSQL("create table life ( recID integer PRIMARY KEY autoincrement,  lat  REAL,  lng REAL, location STRING, mdate STRING, category STRING ,title STRING ,content STRING,image STRING);  "    );
+            db.execSQL("create table life ( recID integer PRIMARY KEY autoincrement,  lat  REAL,  lng REAL, location STRING, mdate STRING, category STRING ,title STRING ,content STRING,image STRING, hour INTEGER, minutes INTEGER);  "    );
             //   db.close();
         }catch (SQLException e) {
             Toast.makeText(getBaseContext(),"ddd",Toast.LENGTH_SHORT).show();
@@ -77,6 +77,8 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
         title = (EditText)findViewById(R.id.editText);
         context = (EditText)findViewById(R.id.editText2);
         spinner = (Spinner)findViewById(R.id.spinner);
+        spinner2 = (Spinner)findViewById(R.id.spinner2);
+        spinner3 = (Spinner)findViewById(R.id.spinner3);
 
         Gps = (Button) findViewById(R.id.GPS_btn);
         Gps.setOnClickListener(this);
@@ -128,9 +130,9 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
                 break;
             case R.id.saveBtn:
                 Log.v("vv",name.getText()+dateStr);
-                db.execSQL("insert into life (lat,  lng, location , mdate , category  ,title  ,content , image) values("+
+                db.execSQL("insert into life (lat,  lng, location , mdate , category  ,title  ,content , image, hour, minutes) values("+
                                 "'" + mLat + "', '" + mLng + "','" + name.getText() + "','" + dateStr +  "','" + spinner.getSelectedItem().toString() + "','" +
-                        title.getText().toString() + "','" + context.getText().toString() + "','"+ImgStr+"' );");
+                        title.getText().toString() + "','" + context.getText().toString() + "','"+ImgStr+"','"+spinner2.getSelectedItem()+"','"+spinner3.getSelectedItem()+"' );");
                 Toast.makeText(getBaseContext(),"저장이 완료되었습니다.",Toast.LENGTH_SHORT).show();
                 title.setText("");
                 context.setText("");
