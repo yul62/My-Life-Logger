@@ -37,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.plus.model.people.Person;
 
@@ -46,7 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class Record extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
+public class Record extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMarkerDragListener {
     private GoogleMap mMap;
     private TextView name;
     private EditText title, context;
@@ -55,10 +56,11 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
     SQLiteDatabase db;
     ImageView iv = null;
 
-    private Button Gps, picBtn, saveBtn;
+    private Button Gps, picBtn, saveBtn,delBtn;
     private Double mLat, mLng;
     private GPSListener gpsListener = new GPSListener();
     private LocationManager manager;
+    private LatLng latlngCameraCenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +73,6 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
             db.execSQL("create table life ( recID integer PRIMARY KEY autoincrement,  lat  REAL,  lng REAL, location STRING, mdate STRING, category STRING ,title STRING ,content STRING,image STRING, hour INTEGER, minutes INTEGER);  "    );
             //   db.close();
         }catch (SQLException e) {
-            Toast.makeText(getBaseContext(),"ddd",Toast.LENGTH_SHORT).show();
         }
         name = (TextView) findViewById(R.id.Name);
         title = (EditText)findViewById(R.id.editText);
@@ -89,6 +90,9 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
         saveBtn = (Button)findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(this);
 
+        delBtn = (Button) findViewById(R.id.delBtn);
+        delBtn.setOnClickListener(this);
+
         iv = (ImageView)findViewById(R.id.iv);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -99,11 +103,11 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        //초기 지도는 국민대
         getMapAddress(37.6108, 126.9956, 1);
     }
 
-    @Override
+    @Override //사진 찍은 이미지 넘겨주는것
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try{
         iv.setImageURI(data.getData());
@@ -124,10 +128,12 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
                 }
                 startLocationService();  //gps
                 break;
+
             case R.id.picBtn:
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent,1);
                 break;
+
             case R.id.saveBtn:
                 Log.v("vv",name.getText()+dateStr);
                 db.execSQL("insert into life (lat,  lng, location , mdate , category  ,title  ,content , image, hour, minutes) values("+
@@ -137,7 +143,12 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
                 title.setText("");
                 context.setText("");
                 iv.clearColorFilter();
+                break;
 
+            case R.id.delBtn:
+                db.execSQL("drop table life");
+                Toast.makeText(getBaseContext(),"데이터베이스를 삭제했습니다.",Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
@@ -230,16 +241,19 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
         }
     }
 
-    void getMapAddress(double lat, double lng, int first) {
-
+    //현재 시간가져오기,
+    void getTime(){
         long now = System.currentTimeMillis();
         // 현재 시간을 저장 한다.
         Date date = new Date(now);
         // 시간 포맷으로 만든다.
-        SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         dateStr = sdfNow.format(date);
+    }
+    // 위도경도로 지도 띄우기
+    void getMapAddress(double lat, double lng, int first) {
 
-
+        getTime();
 
         LatLng loaction = new LatLng(lat, lng);
         mLat=lat; mLng=lng;
@@ -248,19 +262,26 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
             locaStr = "국민대학교";
         else
             locaStr = "현재 위치";
-        mMap.addMarker(new MarkerOptions().position(loaction).title(locaStr));
+        mMap.addMarker(new MarkerOptions().position(loaction).title(locaStr).draggable(true));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(loaction));
+        mMap.setOnMarkerDragListener(this);
 
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
         mMap.animateCamera(zoom);
 
 
+        //한글로 제대로 된 주소 가져오기 ex) 서울특별시 XX구 XX동
+        getLocalName();
+    }
+
+    //한글로 제대로 된 주소 가져오기 ex) 서울특별시 XX구 XX동
+    void getLocalName(){
         Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
 
         String str = null;
         List<Address> addresses;
         try {
-            addresses = geocoder.getFromLocation(loaction.latitude, loaction.longitude, 1);
+            addresses = geocoder.getFromLocation(mLat, mLng, 1);
             str = addresses.get(0).getAddressLine(0).toString();
             System.out.println(str);
         } catch (IOException e) {
@@ -268,5 +289,24 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
         }
         name.setText(str.substring(5));
     }
+    @Override
+    public void onMarkerDragStart(Marker marker) {
 
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override // 마커 이동 끝났을 때
+    public void onMarkerDragEnd(Marker marker) {
+
+        latlngCameraCenter= marker.getPosition();
+
+       // Toast.makeText(getApplicationContext(), "마커이동", Toast.LENGTH_LONG).show();
+        getTime();
+        mLat=latlngCameraCenter.latitude; mLng = latlngCameraCenter.longitude;
+        getLocalName();
+    }
 }
