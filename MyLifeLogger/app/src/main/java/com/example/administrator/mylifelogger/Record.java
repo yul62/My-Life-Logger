@@ -6,11 +6,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -18,8 +22,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,14 +41,21 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.plus.model.people.Person;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class Record extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
     private GoogleMap mMap;
     private TextView name;
+    private EditText title, context;
+    private Spinner spinner;
+    private String dateStr,ImgStr=null;
+    SQLiteDatabase db;
+    ImageView iv = null;
 
-    private Button Gps;
+    private Button Gps, picBtn, saveBtn;
     private Double mLat, mLng;
     private GPSListener gpsListener = new GPSListener();
     private LocationManager manager;
@@ -48,13 +63,31 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_record);
 
-
+        try {
+            db = SQLiteDatabase.openDatabase( "/data/data/com.example.administrator.mylifelogger/myDB",
+                    null, SQLiteDatabase.CREATE_IF_NECESSARY);
+            db.execSQL("create table life ( recID integer PRIMARY KEY autoincrement,  lat  REAL,  lng REAL, location STRING, mdate STRING, category STRING ,title STRING ,content STRING,image STRING);  "    );
+            //   db.close();
+        }catch (SQLException e) {
+            Toast.makeText(getBaseContext(),"ddd",Toast.LENGTH_SHORT).show();
+        }
         name = (TextView) findViewById(R.id.Name);
+        title = (EditText)findViewById(R.id.editText);
+        context = (EditText)findViewById(R.id.editText2);
+        spinner = (Spinner)findViewById(R.id.spinner);
+
         Gps = (Button) findViewById(R.id.GPS_btn);
         Gps.setOnClickListener(this);
+
+        picBtn = (Button) findViewById(R.id.picBtn);
+        picBtn.setOnClickListener(this);
+
+        saveBtn = (Button)findViewById(R.id.saveBtn);
+        saveBtn.setOnClickListener(this);
+
+        iv = (ImageView)findViewById(R.id.iv);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -65,20 +98,46 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        getMapAddress(37.6108,126.9956,1);
+        getMapAddress(37.6108, 126.9956, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try{
+        iv.setImageURI(data.getData());
+        ImgStr  = String.valueOf(data.getData());
+        Log.v("vv", String.valueOf(data.getData()));}
+        catch (Exception e){
+
+        }
     }
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.GPS_btn:
+                manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);       //gps 확인
+                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    showSettingsAlert();    //설정창
+                }
+                startLocationService();  //gps
+                break;
+            case R.id.picBtn:
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent,1);
+                break;
+            case R.id.saveBtn:
+                Log.v("vv",name.getText()+dateStr);
+                db.execSQL("insert into life (lat,  lng, location , mdate , category  ,title  ,content , image) values("+
+                                "'" + mLat + "', '" + mLng + "','" + name.getText() + "','" + dateStr +  "','" + spinner.getSelectedItem().toString() + "','" +
+                        title.getText().toString() + "','" + context.getText().toString() + "','"+ImgStr+"' );");
+                Toast.makeText(getBaseContext(),"저장이 완료되었습니다.",Toast.LENGTH_SHORT).show();
+                title.setText("");
+                context.setText("");
+                iv.clearColorFilter();
 
-        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);       //gps 확인
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            showSettingsAlert();    //설정창
         }
-        startLocationService();  //gps
     }
-
-
 
     //gps 설정되어있지 않을 때 설정창 이동
     public void showSettingsAlert() {
@@ -133,7 +192,7 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
 
                 //   Toast.makeText(getApplicationContext(), "Last Known Location : " + "Latitude : " + latitude + "\nLongitude:" + longitude, Toast.LENGTH_LONG).show();
             }
-        } catch(SecurityException ex) {
+        } catch (SecurityException ex) {
             ex.printStackTrace();
         }
 
@@ -144,20 +203,20 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
 
         //위치 정보가 업데이트 될 때
         public void onLocationChanged(Location location) {
-            double latitude = location.getLatitude();
-            double longitude  = location.getLongitude();
+            mLat = location.getLatitude();
+            mLng = location.getLongitude();
 
-            //String msg = "Latitude : "+ myLat+ "\nLongitude:"+ myLng;
-            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
 
             try {
                 manager.removeUpdates(gpsListener);         //gps 리스너 업데이트 종료
-            } catch(SecurityException ex) {
+            } catch (SecurityException ex) {
                 ex.printStackTrace();
             }
-            getMapAddress(latitude,longitude,0);
+            getMapAddress(mLat, mLng, 0);
 
         }
+
         public void onProviderDisabled(String provider) {
         }
 
@@ -168,11 +227,22 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     }
-    void getMapAddress(double lat, double lng,int first){
-        LatLng loaction = new LatLng(lat, lng);
 
-        String locaStr=null;
-        if(first==1)
+    void getMapAddress(double lat, double lng, int first) {
+
+        long now = System.currentTimeMillis();
+        // 현재 시간을 저장 한다.
+        Date date = new Date(now);
+        // 시간 포맷으로 만든다.
+        SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        dateStr = sdfNow.format(date);
+
+
+
+        LatLng loaction = new LatLng(lat, lng);
+        mLat=lat; mLng=lng;
+        String locaStr = null;
+        if (first == 1)
             locaStr = "국민대학교";
         else
             locaStr = "현재 위치";

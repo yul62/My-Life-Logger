@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //  폰 위치 설정 페이지로 넘어감
                     public void onClick(DialogInterface dialog, int id) {
 
-                        Intent myIntent = new Intent( getApplicationContext(),RecordPage.class);
+                        Intent myIntent = new Intent( getApplicationContext(),Record.class);
                         myIntent.putExtra("lat",point.latitude);
                         myIntent.putExtra("long",point.longitude);
 

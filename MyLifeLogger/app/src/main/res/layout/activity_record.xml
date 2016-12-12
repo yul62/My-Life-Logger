@@ -6,12 +6,11 @@
     tools:context="com.example.administrator.mylifelogger.Record"
     android:fillViewport="false">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="1">
-
 
         <fragment
             android:id="@+id/map"
@@ -21,58 +20,85 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             />
-
-        <TextView
-            android:text="Name"
-            android:textSize = "17sp"
-            android:textStyle = "bold"
-            android:layout_marginLeft="17dp"
-            android:layout_marginRight="17dp"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/Name" />
-
-        <EditText
-            android:layout_width="179dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText"
-            android:hint="제목을 입력해 주세요"
-            android:textColorHint="#e2dada"/>
-
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner"
-            android:spinnerMode="dropdown"
-            android:entries="@array/catergory"
-            android:layout_alignTop="@+id/editTitle"
-            android:layout_gravity="right"
-            />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText2"
-            android:layout_weight="8.27"
-            android:hint="내용을 입력해 주세요"
-            android:textColorHint="#e2dada" />
-
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
-            android:layout_height="27dp"
+            android:layout_height="wrap_content"
             android:text="GPS"
-            android:background="#10000000"
+            android:background="#20000000"
             android:id="@+id/GPS_btn"
-            android:layout_gravity="right" />
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"/>
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/button" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/map"
+            android:layout_centerHorizontal="true">
+            <TextView
+                android:text="Name"
+                android:textSize = "17sp"
+                android:textStyle = "bold"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="17dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/Name" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <EditText
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText"
+                android:hint="제목을 입력해 주세요"
+                android:textColorHint="#e2dada"/>
 
-    </LinearLayout>
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinner"
+                    android:spinnerMode="dropdown"
+                    android:entries="@array/catergory"
+                    android:layout_gravity="right"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText2"
+                android:layout_weight="8.27"
+                android:hint="내용을 입력해 주세요"
+                android:textColorHint="#e2dada" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="사진 추가"
+                android:id="@+id/picBtn" />
+
+            <ImageView
+                android:id="@+id/iv"
+                android:layout_width="300dp"
+                android:layout_height="200dp" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="저장"
+                android:id="@+id/saveBtn"
+                android:layout_gravity="right" />
+
+        </LinearLayout>
+
+    </RelativeLayout >
+
 </ScrollView>

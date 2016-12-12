@@ -3,11 +3,12 @@ package com.example.administrator.mylifelogger;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class RecordPage extends AppCompatActivity {
+public class DayStat extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record_page);
+        setContentView(R.layout.activity_day_stat);
+
     }
 }
