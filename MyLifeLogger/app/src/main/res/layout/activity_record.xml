@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        >
+        android:weightSum="1">
 
 
         <fragment
@@ -24,7 +24,7 @@
 
         <TextView
             android:text="Name"
-            android:textSize = "20sp"
+            android:textSize = "17sp"
             android:textStyle = "bold"
             android:layout_marginLeft="17dp"
             android:layout_marginRight="17dp"
@@ -33,13 +33,46 @@
             android:layout_height="wrap_content"
             android:id="@+id/Name" />
 
+        <EditText
+            android:layout_width="179dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
+            android:hint="제목을 입력해 주세요"
+            android:textColorHint="#e2dada"/>
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:spinnerMode="dropdown"
+            android:entries="@array/catergory"
+            android:layout_alignTop="@+id/editTitle"
+            android:layout_gravity="right"
+            />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText2"
+            android:layout_weight="8.27"
+            android:hint="내용을 입력해 주세요"
+            android:textColorHint="#e2dada" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="27dp"
+            android:text="GPS"
+            android:background="#10000000"
+            android:id="@+id/GPS_btn"
+            android:layout_gravity="right" />
+
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GPS"
-            android:id="@+id/GPS_btn"
-            android:layout_gravity="right" />
+            android:text="New Button"
+            android:id="@+id/button" />
 
     </LinearLayout>
 </ScrollView>

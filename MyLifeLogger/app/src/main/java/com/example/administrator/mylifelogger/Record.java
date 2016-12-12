@@ -1,6 +1,7 @@
 package com.example.administrator.mylifelogger;
 
 import android.*;
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,23 +37,24 @@ import java.util.List;
 import java.util.Locale;
 
 public class Record extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
-    private GoogleMap mMap ;
+    private GoogleMap mMap;
     private TextView name;
-    private GPSListener gpsListener = new GPSListener();
-    private LocationManager manager;
+
     private Button Gps;
     private Double mLat, mLng;
+    private GPSListener gpsListener = new GPSListener();
+    private LocationManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_record);
+
 
         name = (TextView) findViewById(R.id.Name);
         Gps = (Button) findViewById(R.id.GPS_btn);
         Gps.setOnClickListener(this);
-
-        checkDangerousPermissions();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -63,27 +65,7 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(37.6100, 126.9978);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-        mMap.animateCamera(zoom);
-
-
-        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
-
-        String str = null;
-        List<Address> addresses;
-        try {
-            addresses = geocoder.getFromLocation(sydney.latitude, sydney.longitude, 1);
-            str = addresses.get(0).getAddressLine(0).toString();
-            System.out.println(str);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        name.setText(str.substring(5));
+        getMapAddress(37.6108,126.9956,1);
     }
 
     @Override
@@ -97,103 +79,6 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
     }
 
 
-    //gps 허가
-    private void checkDangerousPermissions() {
-        String[] permissions = {
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-        };
-
-        int permissionCheck = PackageManager.PERMISSION_GRANTED;
-        for (int i = 0; i < permissions.length; i++) {
-            permissionCheck = ContextCompat.checkSelfPermission(this, permissions[i]);
-            if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-                break;
-            }
-        }
-
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            //    Toast.makeText(this, "권한 있음", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "권한 없음", Toast.LENGTH_LONG).show();
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-                Toast.makeText(this, "권한 설명 필요함.", Toast.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(this, permissions, 1);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == 1) {
-            for (int i = 0; i < permissions.length; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    //Toast.makeText(this, permissions[i] + " 권한이 승인됨.", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(this, permissions[i] + " 권한이 승인되지 않음.", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    }
-
-    private class GPSListener implements LocationListener {
-
-        //위치 정보가 업데이트 될 때
-        public void onLocationChanged(Location location) {
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
-            mLat = latitude;
-            mLng = longitude;
-            //String msg = "Latitude : "+ myLat+ "\nLongitude:"+ myLng;
-            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-
-
-            // Add a marker in Sydney and move the camera
-            LatLng sydney = new LatLng(mLat, mLng);
-            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-            mMap.animateCamera(zoom);
-
-
-            Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
-
-            String str = null;
-            List<Address> addresses;
-            try {
-                addresses = geocoder.getFromLocation(sydney.latitude, sydney.longitude, 1);
-                str = addresses.get(0).getAddressLine(0).toString();
-                System.out.println(str);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            name.setText(str.substring(5));
-
-            try {
-                manager.removeUpdates(gpsListener);         //gps 리스너 업데이트 종료
-            } catch (SecurityException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    }
 
     //gps 설정되어있지 않을 때 설정창 이동
     public void showSettingsAlert() {
@@ -219,6 +104,8 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
         dialog.show();
     }
 
+
+    //gps 정보요청
     private void startLocationService() {
 
         long minTime = 1000;
@@ -246,10 +133,68 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
 
                 //   Toast.makeText(getApplicationContext(), "Last Known Location : " + "Latitude : " + latitude + "\nLongitude:" + longitude, Toast.LENGTH_LONG).show();
             }
-
         } catch(SecurityException ex) {
             ex.printStackTrace();
         }
 
     }
+
+
+    private class GPSListener implements LocationListener {
+
+        //위치 정보가 업데이트 될 때
+        public void onLocationChanged(Location location) {
+            double latitude = location.getLatitude();
+            double longitude  = location.getLongitude();
+
+            //String msg = "Latitude : "+ myLat+ "\nLongitude:"+ myLng;
+            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
+            try {
+                manager.removeUpdates(gpsListener);         //gps 리스너 업데이트 종료
+            } catch(SecurityException ex) {
+                ex.printStackTrace();
+            }
+            getMapAddress(latitude,longitude,0);
+
+        }
+        public void onProviderDisabled(String provider) {
+        }
+
+
+        public void onProviderEnabled(String provider) {
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+    }
+    void getMapAddress(double lat, double lng,int first){
+        LatLng loaction = new LatLng(lat, lng);
+
+        String locaStr=null;
+        if(first==1)
+            locaStr = "국민대학교";
+        else
+            locaStr = "현재 위치";
+        mMap.addMarker(new MarkerOptions().position(loaction).title(locaStr));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(loaction));
+
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+        mMap.animateCamera(zoom);
+
+
+        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+
+        String str = null;
+        List<Address> addresses;
+        try {
+            addresses = geocoder.getFromLocation(loaction.latitude, loaction.longitude, 1);
+            str = addresses.get(0).getAddressLine(0).toString();
+            System.out.println(str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        name.setText(str.substring(5));
+    }
+
 }
