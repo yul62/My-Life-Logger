@@ -136,8 +136,7 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
 
             case R.id.saveBtn:
                 Log.v("vv",name.getText()+dateStr);
-                db.execSQL("insert into life (lat,  lng, location , mdate , category  ,title  ,content , image, hour, minutes) values("+
-                                "'" + mLat + "', '" + mLng + "','" + name.getText() + "','" + dateStr +  "','" + spinner.getSelectedItem().toString() + "','" +
+                db.execSQL("insert into life (lat,  lng, location , mdate , category  ,title  ,content , image, hour, minutes) values('" + mLat + "', '" + mLng + "','" + name.getText() + "','" + dateStr +  "','" + spinner.getSelectedItem().toString() + "','" +
                         title.getText().toString() + "','" + context.getText().toString() + "','"+ImgStr+"','"+spinner2.getSelectedItem()+"','"+spinner3.getSelectedItem()+"' );");
                 Toast.makeText(getBaseContext(),"저장이 완료되었습니다.",Toast.LENGTH_SHORT).show();
                 title.setText("");
@@ -219,20 +218,16 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
             mLat = location.getLatitude();
             mLng = location.getLongitude();
 
-
-
             try {
                 manager.removeUpdates(gpsListener);         //gps 리스너 업데이트 종료
             } catch (SecurityException ex) {
                 ex.printStackTrace();
             }
             getMapAddress(mLat, mLng, 0);
-
         }
 
         public void onProviderDisabled(String provider) {
         }
-
 
         public void onProviderEnabled(String provider) {
         }
@@ -255,15 +250,15 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
 
         getTime();
 
-        LatLng loaction = new LatLng(lat, lng);
+        LatLng location = new LatLng(lat, lng);
         mLat=lat; mLng=lng;
         String locaStr = null;
         if (first == 1)
             locaStr = "국민대학교";
         else
             locaStr = "현재 위치";
-        mMap.addMarker(new MarkerOptions().position(loaction).title(locaStr).draggable(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(loaction));
+        mMap.addMarker(new MarkerOptions().position(location).title(locaStr).draggable(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
         mMap.setOnMarkerDragListener(this);
 
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);

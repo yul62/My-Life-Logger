@@ -3,6 +3,7 @@ package com.example.administrator.mylifelogger;
 
 
 import android.*;
+import android.Manifest;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
