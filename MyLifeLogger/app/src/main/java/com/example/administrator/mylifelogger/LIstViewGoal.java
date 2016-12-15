@@ -1,11 +1,12 @@
+
 package com.example.administrator.mylifelogger;
 
-import android.graphics.drawable.Drawable;
+        import android.graphics.drawable.Drawable;
 
 /**
  * Created by Administrator on 2016-12-15.
  */
-public class ListViewItem {
+public class LIstViewGoal {
     private Drawable iconDrawable ;
     private String titleStr ;
     private String descStr ;
@@ -27,10 +28,10 @@ public class ListViewItem {
     public Drawable getIcon() {
         return this.iconDrawable ;
     }
-    public String getTitle() {
+    public  String getTitle() {
         return this.titleStr ;
     }
-    public String getDesc() {
+    public  String getDesc() {
         return this.descStr ;
     }
     public int getListid() { return this.Listid; }
