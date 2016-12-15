@@ -41,7 +41,8 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".Record" />
-        <activity android:name=".DayStat"></activity>
+        <activity android:name=".DayStat" />
+        <activity android:name=".Goal"></activity>
     </application>
 
 </manifest>

@@ -247,7 +247,7 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
     }
     // 위도경도로 지도 띄우기
     void getMapAddress(double lat, double lng, int first) {
-
+        mMap.clear();
         getTime();
 
         LatLng location = new LatLng(lat, lng);

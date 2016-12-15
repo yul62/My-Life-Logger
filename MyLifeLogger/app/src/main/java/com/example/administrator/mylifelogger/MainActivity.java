@@ -66,7 +66,7 @@ public class MainActivity extends  TabActivity   {
         tab_host.addTab(spec);
 
         // 탭에서 액티비티를 사용할 수 있도록 인텐트를 생성한다.
-        intent = new Intent().setClass(this, MapsActivity.class);
+        intent = new Intent().setClass(this, Goal.class);
         // "통계" 이라는 태그 값을 가진 TabSpec 객체를 생성한다.
         spec = tab_host.newTabSpec("목표");
         // TabSpec 객체에 TabWidget 객체가 출력할 탭의 이름을 설정한다.
