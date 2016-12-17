@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -50,6 +52,18 @@ public class Goal extends FragmentActivity implements View.OnClickListener {
         listview.setAdapter(adapter);
 
         getList();
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //   Toast.makeText(getApplication(),adapter.getdbId(position),Toast.LENGTH_SHORT).show();
+                Log.v("dd", String.valueOf(adapter.getdbId(position)));
+                int n =  adapter.getdbId(position);
+                Intent intent = new Intent(getApplicationContext(),ViewGoal.class);
+                intent.putExtra("id",n);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
