@@ -45,7 +45,8 @@
         <activity android:name=".Goal" />
         <activity android:name=".GoalAdd" />
         <activity android:name=".ViewRecord" />
-        <activity android:name=".ViewGoal"></activity>
+        <activity android:name=".ViewGoal" />
+        <activity android:name=".Week"></activity>
     </application>
 
 </manifest>

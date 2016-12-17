@@ -145,7 +145,11 @@ public class Record extends FragmentActivity implements OnMapReadyCallback, View
                 break;
 
             case R.id.delBtn:
-                db.execSQL("drop table life");
+//                db.execSQL("drop table life");
+                int aaaaa= 3;
+                db.execSQL( "update life set mdate = '"+"2016/12/15"+"'  where recId = '"+1+"';");
+                db.execSQL( "update life set hour = "+1 +", minutes ="+10+ ",title = '"+"오버워치"+"'  where recId = '"+3+"';");
+                db.execSQL( "update life set hour = "+3 +", minutes ="+0+ ",title = '"+"영어공부"+"'  where recId = '"+4+"';");
                 Toast.makeText(getBaseContext(),"데이터베이스를 삭제했습니다.",Toast.LENGTH_SHORT).show();
                 break;
         }

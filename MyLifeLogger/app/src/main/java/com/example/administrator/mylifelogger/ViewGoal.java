@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class ViewGoal extends FragmentActivity {
@@ -44,17 +45,19 @@ public class ViewGoal extends FragmentActivity {
         Cursor cursor1 = db.rawQuery("select *from life", null);
         while (cursor.moveToNext()) {
             int goalTime =0;
+
             if (cursor.getInt(0) == intent.getExtras().getInt("id")) {
                 //category , hour , minutes , mdate , title , content
-                title.setText("목표 : " + cursor.getString(5));
+                title.setText( cursor.getString(5));
                 Toast.makeText(getBaseContext(), cursor.getString(4), Toast.LENGTH_SHORT).show();
-                time.setText(cursor.getString(4).substring(0, 2) + "월 " + cursor.getString(4).substring(3, 5) + "일 부터 일주일 동안 \n"
-                        + cursor.getString(1) + cursor.getInt(2) + "시간 " + cursor.getInt(3) + "분");
+                time.setText("목표 : "+cursor.getString(4).substring(0, 2) + "월 " + cursor.getString(4).substring(3, 5) + "일 부터 일주일 동안 "
+                        + cursor.getString(1) +" "+ cursor.getInt(2) + "시간 " + cursor.getInt(3) + "분");
                 content.setText(cursor.getString(6));
                 Calendar cal = Calendar
                         .getInstance();
                 goalTime = cursor.getInt(2)*60+cursor.getInt(3);
                 int hour = 0, minute = 0;
+                String cate =cursor.getString(1);
                 cal.set(2016, Integer.parseInt(cursor.getString(4).substring(0, 2)) - 1, Integer.parseInt(cursor.getString(4).substring(3, 5)) - 1);
                 String[] str = new String[7];
                 for (int i = 0; i < 7; i++) {
@@ -63,21 +66,11 @@ public class ViewGoal extends FragmentActivity {
 
                 while (cursor1.moveToNext()) {
                     for (int i = 0; i < 7; i++) {
-//                    for( int i=0; i<=6;i++ ) {
-//                        Log.v("ddda",""+i);
-//                        String date =nextday(cal, 1);
-//                        if(cursor1.getString(4)==date){
-//                            hour += cursor1.getInt(9);
-//                            minute += cursor1.getInt(10);
-//                            if(minute>60){
-//                                hour+=1;
-//                                minute-=60;
-//                            }
-//                        }
-//                    }
                         Log.v("ddd", cursor1.getString(4).substring(0, 10) + str[i]);
-                        if (cursor1.getString(4).substring(0, 10).equals(str[i]))
+                        if (cursor1.getString(4).substring(0, 10).equals(str[i])&&cate.equals(cursor1.getString(5))) {
                             minute += cursor1.getInt(9) * 60 + cursor1.getInt(10);
+                            Log.v("dd아왜","hour " + cursor1.getInt(9) + "minute " + cursor1.getInt(10));
+                        }
                         Log.v("ddd", "" + i);
                     }
                 }
@@ -86,7 +79,30 @@ public class ViewGoal extends FragmentActivity {
                 if(goalTime < minute)
                     result.setText("목표 완료함");
                 else{
-                    result.setText("");
+                    int year,year1, month,month1 ,day, day1;
+
+                    long now = System.currentTimeMillis();
+                    // 현재 시간을 저장 한다.
+                    Date date = new Date(now);
+                    // 시간 포맷으로 만든다.
+                    SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy/MM/dd");
+                    String strNow = sdfNow.format(date);
+
+                    year=Integer.parseInt(str[6].substring(0,4));
+                    month = Integer.parseInt(str[6].substring(5,7));
+                    day = Integer.parseInt(str[6].substring(8,10));
+                    year1=Integer.parseInt(strNow.substring(0,4));
+                    month1 = Integer.parseInt(strNow.substring(5,7));
+                    day1= Integer.parseInt(strNow.substring(8,10));
+
+                    if(year1>year )
+                        result.setText("목표를 완료하지 못함");
+                    else if(month1>month)
+                        result.setText("목표를 완료하지 못함");
+                    else if(day1>day)
+                        result.setText("목표를 완료하지 못함");
+                    else
+                        result.setText("진행중");
                 }
                 break;
             }
