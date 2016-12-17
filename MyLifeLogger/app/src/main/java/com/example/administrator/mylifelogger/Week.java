@@ -28,9 +28,10 @@ public class Week extends FragmentActivity  implements View.OnClickListener{
     Spinner selMonth, selDay;
     SQLiteDatabase db;
     Button serBtn;
-    TextView text;
+    TextView text,lastday;
     ListView listview;
     ListViewAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,7 @@ public class Week extends FragmentActivity  implements View.OnClickListener{
         serBtn.setOnClickListener(this);
 
         text = (TextView)findViewById(R.id.text);
+        lastday = (TextView)findViewById(R.id.lastday);
 
         adapter = new ListViewAdapter();
         listview = (ListView)findViewById(R.id.listview3);
@@ -70,14 +72,15 @@ public class Week extends FragmentActivity  implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         Cursor cursor = db.rawQuery("select * from life", null);
-        String str = null;
+        String str = "";
         str = selMonth.getSelectedItem().toString() + "/" + selDay.getSelectedItem().toString();
         int result = 0;
         removeList();
         Calendar cal = Calendar
                 .getInstance();
         int studymin=0,exercisemin=0,cafemin=0,foodmin=0,travelmin=0,gamemin=0,moviemin=0;
-        cal.set(2016, Integer.parseInt(cursor.getString(4).substring(0, 2)) - 1, Integer.parseInt(cursor.getString(4).substring(3, 5)) - 1);
+       // Log.v("dddd",get)
+        cal.set(2016, Integer.parseInt(str.substring(0,2)) - 1, Integer.parseInt(str.substring(3,5)) - 1);
         String[] date = new String[7];
         for (int i = 0; i < 7; i++) {
             date[i] = nextday(cal, 1);
@@ -116,7 +119,6 @@ public class Week extends FragmentActivity  implements View.OnClickListener{
                             break;
                     }
                     result = 1;
-                    Toast.makeText(getBaseContext(), cursor.getString(4).substring(5, 10), Toast.LENGTH_SHORT).show();
 
                 }
                 adapter.notifyDataSetChanged();
@@ -124,26 +126,28 @@ public class Week extends FragmentActivity  implements View.OnClickListener{
         }
         if (result == 0) {
             Toast.makeText(getBaseContext(), "결과가 없습니다.", Toast.LENGTH_SHORT).show();
+            text.setText("");
             removeList();
         }
         else{
-            String concat=null;
+            String concat="";
             if(studymin!=0)
-                concat+= "공부 "+studymin/60+ "시간 "+studymin%60;
-            else if(exercisemin!=0)
-                concat += "운동 "+ exercisemin/60+ "시간 "+exercisemin%60;
-            else if (cafemin!=0)
-                concat += "카페 "+ cafemin/60+ "시간 "+cafemin%60;
-            else if(foodmin!=0)
-                concat+="식사 "+foodmin/60 +"시간 "+foodmin%60;
-            else if(travelmin!=0)
-                concat += "여행 "+travelmin/60+"시간 "+travelmin%60;
-            else if(gamemin!=0)
-                concat += "게임 "+gamemin/60+"시간 "+gamemin%60;
-            else if(moviemin!=0)
-                concat +="영화 "+moviemin/60+"시간"+moviemin%60;
+                concat+= "공부 "+studymin/60+ "시간 "+studymin%60+"분\n";
+            if(exercisemin!=0)
+                concat += "운동 "+ exercisemin/60+ "시간 "+exercisemin%60+"분\n";
+            if (cafemin!=0)
+                concat += "카페 "+ cafemin/60+ "시간 "+cafemin%60+"분\n";
+            if(foodmin!=0)
+                concat+="식사 "+foodmin/60 +"시간 "+foodmin%60+"분\n";
+            if(travelmin!=0)
+                concat += "여행 "+travelmin/60+"시간 "+travelmin%60+"분\n";
+            if(gamemin!=0)
+                concat += "게임 "+gamemin/60+"시간 "+gamemin%60+"분\n";
+            if(moviemin!=0)
+                concat +="영화 "+moviemin/60+"시간"+moviemin%60+"분\n";
 
             text.setText(concat);
+            lastday.setText(date[6]);
         }
     }
     public void init(){

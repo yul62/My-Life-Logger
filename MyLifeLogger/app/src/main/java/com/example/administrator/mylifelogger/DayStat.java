@@ -104,7 +104,6 @@ public class DayStat extends FragmentActivity implements View.OnClickListener, O
                         break;
                 }
                 result = 1;
-                Toast.makeText(getBaseContext(), cursor.getString(4).substring(5, 10), Toast.LENGTH_SHORT).show();
                 LatLng location = new LatLng(cursor.getDouble(1), cursor.getDouble(2));
                 mMap.addMarker(new MarkerOptions().position(location).title(cursor.getInt(0) + ". " + cursor.getString(6)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(location));

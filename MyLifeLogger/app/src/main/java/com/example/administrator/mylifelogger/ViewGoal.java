@@ -66,18 +66,14 @@ public class ViewGoal extends FragmentActivity {
 
                 while (cursor1.moveToNext()) {
                     for (int i = 0; i < 7; i++) {
-                        Log.v("ddd", cursor1.getString(4).substring(0, 10) + str[i]);
                         if (cursor1.getString(4).substring(0, 10).equals(str[i])&&cate.equals(cursor1.getString(5))) {
                             minute += cursor1.getInt(9) * 60 + cursor1.getInt(10);
-                            Log.v("dd아왜","hour " + cursor1.getInt(9) + "minute " + cursor1.getInt(10));
                         }
-                        Log.v("ddd", "" + i);
                     }
                 }
 
-                Log.v("dd", "hour " + hour + "minute " + minute);
                 if(goalTime < minute)
-                    result.setText("목표 완료함");
+                    result.setText(minute/60+"시간 "+minute%60+"분으로 목표 완료함");
                 else{
                     int year,year1, month,month1 ,day, day1;
 
@@ -96,13 +92,13 @@ public class ViewGoal extends FragmentActivity {
                     day1= Integer.parseInt(strNow.substring(8,10));
 
                     if(year1>year )
-                        result.setText("목표를 완료하지 못함");
+                        result.setText(minute/60+"시간 "+minute%60+"분으로 목표를 완료하지 못함");
                     else if(month1>month)
-                        result.setText("목표를 완료하지 못함");
+                        result.setText(minute/60+"시간 "+minute%60+"분으로 목표를 완료하지 못함");
                     else if(day1>day)
-                        result.setText("목표를 완료하지 못함");
+                        result.setText(minute/60+"시간 "+minute%60+"분으로 목표를 완료하지 못함");
                     else
-                        result.setText("진행중");
+                        result.setText(minute/60+"시간 "+minute%60+"분으로 진행중");
                 }
                 break;
             }
