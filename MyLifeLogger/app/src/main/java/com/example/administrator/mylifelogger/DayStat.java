@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -53,6 +54,18 @@ public class DayStat extends FragmentActivity implements View.OnClickListener, O
         // 리스트뷰 참조 및 Adapter달기
         listview = (ListView) findViewById(R.id.listview1);
         listview.setAdapter(adapter);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+             //   Toast.makeText(getApplication(),adapter.getdbId(position),Toast.LENGTH_SHORT).show();
+                Log.v("dd", String.valueOf(adapter.getdbId(position)));
+                int n =  adapter.getdbId(position);
+                Intent intent = new Intent(getApplicationContext(),ViewRecord.class);
+                intent.putExtra("id",n);
+                startActivity(intent);
+            }
+        });
 
     }
 

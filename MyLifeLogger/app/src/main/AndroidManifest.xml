@@ -43,7 +43,8 @@
         <activity android:name=".Record" />
         <activity android:name=".DayStat" />
         <activity android:name=".Goal" />
-        <activity android:name=".GoalAdd"></activity>
+        <activity android:name=".GoalAdd" />
+        <activity android:name=".ViewRecord"></activity>
     </application>
 
 </manifest>
