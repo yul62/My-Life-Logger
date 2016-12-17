@@ -26,8 +26,6 @@ public class GoalAdd extends FragmentActivity implements View.OnClickListener {
         btn = (Button) findViewById(R.id.button2);
         btn.setOnClickListener(this);
 
-        delBtn = (Button)findViewById(R.id.button3);
-        delBtn.setOnClickListener(this);
 
         caSpin = (Spinner) findViewById(R.id.spinner6);
         hourSpin = (Spinner) findViewById(R.id.spinner7);
@@ -42,7 +40,7 @@ public class GoalAdd extends FragmentActivity implements View.OnClickListener {
             db = SQLiteDatabase.openDatabase("/data/data/com.example.administrator.mylifelogger/myDB",
                     null, SQLiteDatabase.CREATE_IF_NECESSARY);
             db.execSQL("create table goal ( recID integer PRIMARY KEY autoincrement, category STRING, hour INTEGER, minutes INTEGER, mdate STRING, title STRING, content STRING );  ");
-            Toast.makeText(getBaseContext(), "하하", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getBaseContext(), "하하", Toast.LENGTH_SHORT).show();
         } catch (SQLException e) {
         }
     }
@@ -57,10 +55,7 @@ public class GoalAdd extends FragmentActivity implements View.OnClickListener {
                 content.setText("");
                 Toast.makeText(getBaseContext(), "저장이 완료되었습니다.", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.button3:
-                db.execSQL("drop table goal");
-                Toast.makeText(getBaseContext(),"삭제하였습니다.",Toast.LENGTH_SHORT).show();
-                break;
+
         }
 
     }

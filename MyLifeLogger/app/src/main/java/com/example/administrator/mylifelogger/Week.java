@@ -85,6 +85,7 @@ public class Week extends FragmentActivity  implements View.OnClickListener{
         for (int i = 0; i < 7; i++) {
             date[i] = nextday(cal, 1);
         }
+        lastday.setText("   ~"+date[6].substring(5,7)+"월 "+date[6].substring(8,10)+"까지");
         while (cursor.moveToNext()) {
             for (int i = 0; i < 7; i++) {
                 if (date[i].equals(cursor.getString(4).substring(0, 10))) {
@@ -147,7 +148,7 @@ public class Week extends FragmentActivity  implements View.OnClickListener{
                 concat +="영화 "+moviemin/60+"시간"+moviemin%60+"분\n";
 
             text.setText(concat);
-            lastday.setText(date[6]);
+
         }
     }
     public void init(){
